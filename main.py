@@ -1,3 +1,5 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 from fastapi import FastAPI
 from datetime import datetime
 import pandas as pd
@@ -8,6 +10,7 @@ app = FastAPI()
 data = pd.read_csv(r"./Data/Datos_de_Pelicula.csv")
 cast_data = pd.read_csv(r"./Data/cast_limpio.csv")
 crew_data = pd.read_csv(r"./Data/crew_limpio.csv")
+ml = pd.read_csv(r'./Data/Recomendacion.csv')
 
 
 # Función para consultar la cantidad de películas por mes
@@ -97,3 +100,45 @@ def votos_titulo(titulo: str):
         "cantidad_votos": votos,
         "promedio_votos": promedio_votos
     }
+
+# Suponiendo que los datos están en un DataFrame llamado 'data' y tienen columnas 'title' y 'genre'
+ml = ml.head(6000)
+
+# Convertir títulos a minúsculas
+ml['title'] = ml['title'].str.lower()  
+# Convertir géneros a minúsculas
+ml['genres'] = ml['genres'].str.lower()  
+
+ml['combined_features'] = ml['title'] + " " + ml['genres']
+ml['combined_features'] = ml['combined_features'].fillna('None')
+
+tf_idf = TfidfVectorizer(stop_words='english')
+tf_idf_matrix = tf_idf.fit_transform(ml['combined_features'])
+
+cos_sim = cosine_similarity(tf_idf_matrix, tf_idf_matrix)
+
+@app.get("/recomendacion/{titulo}")
+def recomendacion(titulo: str):
+    # Asegúrate de que los títulos están en minúsculas para facilitar la comparación
+    ml['title'] = ml['title'].str.lower()
+
+    # Verificar si el título existe en el dataset
+    if titulo.lower() not in ml['title'].values:
+        return {"error": "Título no encontrado."}
+
+    # Obtener el índice de la película que coincide con el título
+    idx = ml[ml['title'] == titulo.lower()].index[0]
+
+    # Obtener las similitudes para la película seleccionada
+    sim_scores = list(enumerate(cos_sim[idx]))
+
+    # Ordenar las películas por similitud
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+    # Obtener los índices de las 5 películas más similares (excluyendo la película misma)
+    sim_indices = [i[0] for i in sim_scores[1:6]]
+
+    # Obtener los títulos de las películas similares
+    sim_movies =ml['title'].iloc[sim_indices].tolist()
+
+    return {"recomendaciones": sim_movies}
