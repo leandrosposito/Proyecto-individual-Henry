@@ -29,7 +29,7 @@ pure_eval
 pydantic 
 pydantic_core 
 Pygments 
-python-dateuti
+python-dateutil==2.9.0
 python
 post0
 pytz 
