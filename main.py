@@ -102,7 +102,7 @@ def votos_titulo(titulo: str):
     }
 
 # Suponiendo que los datos están en un DataFrame llamado 'data' y tienen columnas 'title' y 'genre'
-ml = ml.head(4000)
+ml = ml.head(3000)
 
 # Convertir títulos a minúsculas
 ml['title'] = ml['title'].str.lower()  
