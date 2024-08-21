@@ -7,7 +7,6 @@ comm
 debugpy
 decorator
 executing
-fastapi
 h11
 idna
 ipykernel
@@ -18,9 +17,9 @@ jupyter_client
 jupyter_core
 matplotlib-inline
 nest-asyncio
-numpy
+
 packaging
-pandas
+
 parso 
 platformdirs 
 prompt_toolkit 
@@ -29,8 +28,6 @@ pure_eval
 pydantic 
 pydantic_core 
 Pygments 
-python-dateutil==2.9.0
-python
 post0
 pytz 
 pywin32 
