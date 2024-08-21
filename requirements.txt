@@ -27,7 +27,6 @@ pydantic
 pydantic_core 
 Pygments 
 pytz 
-pywin32 
 zmq 
 scikit-learn 
 scipy 
