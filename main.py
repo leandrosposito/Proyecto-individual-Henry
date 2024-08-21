@@ -101,44 +101,44 @@ def votos_titulo(titulo: str):
         "promedio_votos": promedio_votos
     }
 
-# Suponiendo que los datos están en un DataFrame llamado 'data' y tienen columnas 'title' y 'genre'
-ml = ml.head(6000)
+# # Suponiendo que los datos están en un DataFrame llamado 'data' y tienen columnas 'title' y 'genre'
+# ml = ml.head(6000)
 
-# Convertir títulos a minúsculas
-ml['title'] = ml['title'].str.lower()  
-# Convertir géneros a minúsculas
-ml['genres'] = ml['genres'].str.lower()  
+# # Convertir títulos a minúsculas
+# ml['title'] = ml['title'].str.lower()  
+# # Convertir géneros a minúsculas
+# ml['genres'] = ml['genres'].str.lower()  
 
-ml['combined_features'] = ml['title'] + " " + ml['genres']
-ml['combined_features'] = ml['combined_features'].fillna('None')
+# ml['combined_features'] = ml['title'] + " " + ml['genres']
+# ml['combined_features'] = ml['combined_features'].fillna('None')
 
-tf_idf = TfidfVectorizer(stop_words='english')
-tf_idf_matrix = tf_idf.fit_transform(ml['combined_features'])
+# tf_idf = TfidfVectorizer(stop_words='english')
+# tf_idf_matrix = tf_idf.fit_transform(ml['combined_features'])
 
-cos_sim = cosine_similarity(tf_idf_matrix, tf_idf_matrix)
+# cos_sim = cosine_similarity(tf_idf_matrix, tf_idf_matrix)
 
-@app.get("/recomendacion/{titulo}")
-def recomendacion(titulo: str):
-    # Asegúrate de que los títulos están en minúsculas para facilitar la comparación
-    ml['title'] = ml['title'].str.lower()
+# @app.get("/recomendacion/{titulo}")
+# def recomendacion(titulo: str):
+#     # Asegúrate de que los títulos están en minúsculas para facilitar la comparación
+#     ml['title'] = ml['title'].str.lower()
 
-    # Verificar si el título existe en el dataset
-    if titulo.lower() not in ml['title'].values:
-        return {"error": "Título no encontrado."}
+#     # Verificar si el título existe en el dataset
+#     if titulo.lower() not in ml['title'].values:
+#         return {"error": "Título no encontrado."}
 
-    # Obtener el índice de la película que coincide con el título
-    idx = ml[ml['title'] == titulo.lower()].index[0]
+#     # Obtener el índice de la película que coincide con el título
+#     idx = ml[ml['title'] == titulo.lower()].index[0]
 
-    # Obtener las similitudes para la película seleccionada
-    sim_scores = list(enumerate(cos_sim[idx]))
+#     # Obtener las similitudes para la película seleccionada
+#     sim_scores = list(enumerate(cos_sim[idx]))
 
-    # Ordenar las películas por similitud
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+#     # Ordenar las películas por similitud
+#     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-    # Obtener los índices de las 5 películas más similares (excluyendo la película misma)
-    sim_indices = [i[0] for i in sim_scores[1:6]]
+#     # Obtener los índices de las 5 películas más similares (excluyendo la película misma)
+#     sim_indices = [i[0] for i in sim_scores[1:6]]
 
-    # Obtener los títulos de las películas similares
-    sim_movies =ml['title'].iloc[sim_indices].tolist()
+#     # Obtener los títulos de las películas similares
+#     sim_movies =ml['title'].iloc[sim_indices].tolist()
 
-    return {"recomendaciones": sim_movies}
+#     return {"recomendaciones": sim_movies}
